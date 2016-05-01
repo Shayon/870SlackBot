@@ -1,8 +1,6 @@
 require 'sinatra'
 require 'uri'
 
-$foo = 'hello'
-
 get '/' do
   puts 'hi'
   'get successful'
@@ -12,12 +10,12 @@ post '/music' do
   text = params[:text]
   puts '### text is: ' + text
 
-  guidArray = extractYoutubeGuids(text)
+  guidArray = extract_youtube_guids(text)
   print_guids(guidArray)
 
 end
 
-def extractYoutubeGuids(text)
+def extract_youtube_guids(text)
   guidArray = Array.new
 
   links = URI.extract(text)
@@ -34,10 +32,10 @@ def extractYoutubeGuids(text)
 end
 
 def is_youtube_uri(link)
-  return link =~ /\A#{URI::regexp}\z/ && valid_websites(link)
+  return link =~ /\A#{URI::regexp}\z/ && valid_website(link)
 end
 
-def valid_websites(url)
+def valid_website(url)
   return url.include? "youtube"
 end
 
