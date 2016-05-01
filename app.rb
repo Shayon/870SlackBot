@@ -10,37 +10,46 @@ post '/music' do
   text = params[:text]
   puts '### text is: ' + text
 
-  guidArray = extract_youtube_guids(text)
-  print_guids(guidArray)
+  uris = extract_uris(text)
+  youtubeUris = filter_for_youtube(uris)
+  youtubeGuids = extract_guids(youtubeUris)
+  print_guids(youtubeGuids)
 
 end
 
-def extract_youtube_guids(text)
+def extract_uris(text)
+  return URI.extract(text)
+end
+
+def filter_for_youtube(uris)
+  youtubeUris = Array.new
+  uris.each do |uri|
+    puts '### uri argument is ' + uri
+    if is_youtube_uri(uri)
+      youtubeUris.push(uri)
+    end
+  end
+  return youtubeUris
+end
+
+def extract_guids(youtubeUris)
   guidArray = Array.new
 
-  links = URI.extract(text)
-  links.each do |link|
-    puts '### link argument is ' + link
-    if is_youtube_uri(link)
-      guid = link[/https:\/\/www.youtube.com\/watch\?v=(.*)/, 1]
-      guidArray.push guid
-      puts '### guid is ' + guid
-    end
+  youtubeUris.each do |uri|
+    guid = uri[/https:\/\/www.youtube.com\/watch\?v=(.*)/, 1]
+    guidArray.push guid
+    puts '### guid is ' + guid
   end
 
   return guidArray
 end
 
-def is_youtube_uri(link)
-  return link =~ /\A#{URI::regexp}\z/ && valid_website(link)
-end
-
-def valid_website(url)
-  return url.include? "youtube"
+def is_youtube_uri(uri)
+  uri.include? "youtube"
 end
 
 def print_guids(guidArray)
-  puts '### All valid youtube links:'
+  puts '### All valid youtube uris:'
   puts ''
   guidArray.each do |guid|
     puts guid
